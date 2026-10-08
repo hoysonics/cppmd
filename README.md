@@ -72,6 +72,21 @@ PR: https://github.com/you/app/pull/42
 Validation: npm test (128 passed)
 ```
 
+When the changes span several concerns, the agent first groups them and asks how to split them:
+
+```text
+| Label | Group      | Files | Depends on | Planned commit / PR title             |
+|-------|------------|-------|------------|---------------------------------------|
+| A     | config     | 1     | -          | chore(build): clarify fallback values |
+| B     | auth-retry | 6     | A          | feat(auth): retry expired sessions    |
+| C     | docs       | 2     | -          | docs: document session retry          |
+
+1) Single PR, one commit   2) Single PR, grouped commits   3) Split PRs (stacked where dependent)
+4) Partial, e.g. "4 A,B"   5) Dry-run   6) Abort   e) Edit
+```
+
+Skip the question by stating the choice up front, for example "cpp grouped commits", "cpp split PRs", or "cpp dry-run". A single coherent change proceeds without asking.
+
 The agent stops and asks instead of guessing when the Git account is ambiguous, a deploy target is not defined, required checks or reviews are missing, or a conflict needs a decision. It never force-pushes, bypasses branch protection, or switches your global Git/GitHub account.
 
 ### 4. Update or uninstall
@@ -94,6 +109,7 @@ Use the direct-file instruction above, or register `SKILL.md` through the agent'
 | --- | --- |
 | `SKILL.md` | The workflow: account handling, commit/push/PR, merge, deploy, and blockers |
 | `templates/commit-message.md` | Commit message formats |
+| `templates/grouping-plan.md` | Grouping plan shown before committing multi-concern changes |
 | `templates/pull-request.md` | Fallback PR title and body when the repository has no template |
 | `templates/push-message.md` | Status report formats after push, merge, and deploy |
 | `install.sh` | Installer for Claude Code, Codex, and project-level use |

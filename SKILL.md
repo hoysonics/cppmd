@@ -1,6 +1,6 @@
 ---
 name: cppmd
-description: Commit all repository changes, push and open a pull request (cpp), optionally merge (cppm) and deploy (cppmd), preserving the existing Git account and using consistent commit and push reporting templates. Use when the user invokes these workflows.
+description: Commit all repository changes (grouped by concern into commits or separate PRs), push and open a pull request (cpp), optionally merge (cppm) and deploy (cppmd), preserving the existing Git account and using consistent commit and push reporting templates. Use when the user invokes these workflows.
 ---
 
 # CPP workflows
@@ -29,10 +29,33 @@ If author identity is missing, recent human commit history is a hint, not proof 
 
 1. Inspect all tracked and untracked changes and the branch diff against the intended PR base. Include pre-existing user changes in the requested all-changes commit; never discard them. Respect ignore rules. Do not force-add generated files, secrets, or credentials. Stop for specific suspected secrets that would be committed.
 2. Run relevant tests and required repository checks. Fix failures within scope. Report checks actually run; do not claim unrun checks passed or publish known failing work without explicit direction.
-3. Continue on the appropriate feature branch. From a default or protected branch, create a descriptive feature branch. Infer the remote/base from upstream and repository context; ask only if ambiguous.
-4. Stage all intended changes, inspect the staged diff, and commit using the rules below. Skip empty commits. If only existing unpublished commits remain, continue with them.
-5. Push the feature branch, setting upstream when missing. Use normal pushes. Do not force-push, rewrite shared history, or push directly to a protected/default branch without separate explicit direction. Resolve routine conflicts while preserving both sides; stop for substantive unresolved decisions.
-6. Create a PR or update the existing PR for this branch, using the repository template first and [the PR template](templates/pull-request.md) otherwise. Describe the final behavior and real validation. With `gh`, use `--body-file` for multiline descriptions. No base-relative changes means no new PR is needed.
+3. Group the changes and, when they span more than one concern, confirm the commit/PR split as described in [Change grouping](#change-grouping).
+4. Continue on the appropriate feature branch. From a default or protected branch, create a descriptive feature branch. Infer the remote/base from upstream and repository context; ask only if ambiguous.
+5. Stage each group's files, inspect the staged diff, and commit using the rules below, in plan order: one commit per group, or a single commit when that option was chosen. Skip empty commits. If only existing unpublished commits remain, continue with them.
+6. Push the feature branch(es), setting upstream when missing. Use normal pushes. Do not force-push, rewrite shared history, or push directly to a protected/default branch without separate explicit direction. Resolve routine conflicts while preserving both sides; stop for substantive unresolved decisions.
+7. Create a PR or update the existing PR for each branch, using the repository template first and [the PR template](templates/pull-request.md) otherwise. Describe the final behavior and real validation. With `gh`, use `--body-file` for multiline descriptions. No base-relative changes means no new PR is needed.
+
+## Change grouping
+
+Before committing, sort every change into groups by concern, so each commit or PR has one purpose and can be reviewed and reverted on its own.
+
+- Group by intent: a feature, a fix, a refactor, docs, config/build, CI, dependency updates. Keep tests with the code they test, lockfiles with their manifest, generated files with their source, and both sides of a rename together.
+- Keep whole files in one group. Split a file by hunks only when the hunks clearly belong to different concerns and each resulting commit still builds.
+- Order groups so that each one builds on only the ones before it (for example config → shared code → features → docs). Note dependencies between groups.
+- Avoid a catch-all `misc` group. If a group still mixes concerns (for example permissions and deploy timing), say so and suggest a split.
+- Give each group a label (A, B, C…), a short name, its file count, and a planned commit/PR title that follows the commit message rules.
+
+If there is a single group, proceed without asking. If there are several, show the plan with [the grouping template](templates/grouping-plan.md) and wait for one choice:
+
+1. **Single PR, one commit**: everything in one commit.
+2. **Single PR, grouped commits** (default recommendation): one commit per group on one branch.
+3. **Split PRs**: one branch and PR per group. Branch independent groups from the base; stack dependent ones (A → B → C), each PR targeting the previous group's branch.
+4. **Partial**: commit only the chosen groups (for example `4 A,B`) with option 2 or 3; leave the rest uncommitted and report it.
+5. **Dry-run**: print the plan, branches, and titles; change nothing and stop.
+6. **Abort**: change nothing and stop.
+- **e) Edit**: move files between groups, rename groups, or change branches/titles, then show the plan again.
+
+Skip the question when the invocation already states the choice (for example "cpp single", "cpp grouped commits", "cpp split PRs", "cpp dry-run") or when repository instructions define one. Never drop, stash, or discard changes outside the chosen groups.
 
 ## Commit message rules
 
@@ -56,11 +79,13 @@ Report the actual remote, branch, pushed commit/range, and PR link when availabl
 
 Check the latest PR head, required CI, reviews, and mergeability. Wait for pending checks with bounded polling; fix actionable failures and recheck the new head. Merge only after required checks/reviews pass, using repository conventions and an allowed method (squash if no convention exists). Guard the expected head when supported. Apply commit-message rules to the squash/merge message as appropriate.
 
+For split PRs, merge in plan order. Merge stacked PRs from the bottom up: after each merge, retarget the next PR to the base if the host has not, update its branch by merging the base into it (a normal push, never a force-push), and recheck before merging. Report each PR's merge state; stop at the first blocked PR and leave the rest open.
+
 Do not bypass protections, use admin overrides, or fabricate reviews. If blocked, report the PR and reason. Auto-merge is pending until verified as actually merged. If no new PR was needed, inspect the relevant existing PR; do not invent one to merge.
 
 ## Deploy (`cppmd`)
 
-Proceed only after the relevant changes actually merged. Determine provider, command, environment, and checks from repository configuration and session context. Use the established destination; ask if none is defined or environments are ambiguous. Do not implicitly create paid infrastructure or change providers.
+Proceed only after the relevant changes actually merged; for split PRs, deploy once after all chosen PRs merged. Determine provider, command, environment, and checks from repository configuration and session context. Use the established destination; ask if none is defined or environments are ambiguous. Do not implicitly create paid infrastructure or change providers.
 
 Deploy the merged revision. Monitor an automatic deployment triggered by merge instead of duplicating it. Verify the completed run and perform an appropriate smoke check of the deployed revision. Retry only with a concrete corrective action; follow the established rollback procedure when applicable. Report URL/run ID, revision, and observed result. If no changes or merge occurred, verify whether the requested revision is already deployed before deciding whether deployment is needed.
 
