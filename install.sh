@@ -158,6 +158,6 @@ resolve_source
 
 say ""
 say "Installed. Start a new agent session, then in a git repository run:"
-(( want_claude || want_project )) && say "  Claude Code: /cppmd   (or ask for cpp / cppm)"
-(( want_codex ))                  && say "  Codex:       \$cppmd   (or ask for cpp / cppm)"
+(( want_claude || want_project )) && say "  Claude Code: /cppmd   (or ask for c / cpp / cppm)"
+(( want_codex ))                  && say "  Codex:       \$cppmd   (or ask for c / cpp / cppm)"
 say "Update later by re-running this installer."

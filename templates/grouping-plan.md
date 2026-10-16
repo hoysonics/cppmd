@@ -25,6 +25,8 @@ e) Edit                      Change groups, branches, or titles
 Choose a number or e.
 ```
 
+In `c` mode, label options 1 and 2 "One commit" and "Grouped commits" and omit option 3.
+
 List each group's files when asked, or when there are few enough to read at a glance:
 
 ```text

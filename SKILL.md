@@ -1,6 +1,6 @@
 ---
 name: cppmd
-description: Commit all repository changes (grouped by concern into commits or separate PRs), push and open a pull request (cpp), optionally merge (cppm) and deploy (cppmd), preserving the existing Git account and using consistent commit and push reporting templates. Use when the user invokes these workflows.
+description: Commit all repository changes grouped by concern (c), then push and open a pull request (cpp), optionally merge (cppm) and deploy (cppmd), preserving the existing Git account and using consistent commit and push reporting templates. Use when the user invokes these workflows.
 ---
 
 # CPP workflows
@@ -9,7 +9,8 @@ These instructions are tool-independent Markdown for Codex, Claude, and other co
 
 ## Modes and authorization
 
-- `cpp`: commit all changes → push → create or update a ready-for-review PR.
+- `c`: commit all changes, then stop. No push, branch creation, PR, merge, or deploy.
+- `cpp`: `c` → push → create or update a ready-for-review PR.
 - `cppm`: `cpp` → merge.
 - `cppmd`: `cppm` → deploy the merged revision.
 
@@ -30,8 +31,8 @@ If author identity is missing, recent human commit history is a hint, not proof 
 1. Inspect all tracked and untracked changes and the branch diff against the intended PR base. Include pre-existing user changes in the requested all-changes commit; never discard them. Respect ignore rules. Do not force-add generated files, secrets, or credentials. Stop for specific suspected secrets that would be committed.
 2. Run relevant tests and required repository checks. Fix failures within scope. Report checks actually run; do not claim unrun checks passed or publish known failing work without explicit direction.
 3. Group the changes and, when they span more than one concern, confirm the commit/PR split as described in [Change grouping](#change-grouping).
-4. Continue on the appropriate feature branch. From a default or protected branch, create a descriptive feature branch. Infer the remote/base from upstream and repository context; ask only if ambiguous.
-5. Stage each group's files, inspect the staged diff, and commit using the rules below, in plan order: one commit per group, or a single commit when that option was chosen. Skip empty commits. If only existing unpublished commits remain, continue with them.
+4. Continue on the appropriate feature branch. From a default or protected branch, create a descriptive feature branch. Infer the remote/base from upstream and repository context; ask only if ambiguous. In `c` mode, commit on the current branch instead and do not create a branch.
+5. Stage each group's files, inspect the staged diff, and commit using the rules below, in plan order: one commit per group, or a single commit when that option was chosen. Skip empty commits. If only existing unpublished commits remain, continue with them. In `c` mode, stop here and report with [the commit report template](templates/push-message.md#committed-only); if there is nothing to commit, say so and stop.
 6. Push the feature branch(es), setting upstream when missing. Use normal pushes. Do not force-push, rewrite shared history, or push directly to a protected/default branch without separate explicit direction. Resolve routine conflicts while preserving both sides; stop for substantive unresolved decisions.
 7. Create a PR or update the existing PR for each branch, using the repository template first and [the PR template](templates/pull-request.md) otherwise. Describe the final behavior and real validation. With `gh`, use `--body-file` for multiline descriptions. No base-relative changes means no new PR is needed.
 
@@ -55,7 +56,9 @@ If there is a single group, proceed without asking. If there are several, show t
 6. **Abort**: change nothing and stop.
 - **e) Edit**: move files between groups, rename groups, or change branches/titles, then show the plan again.
 
-Skip the question when the invocation already states the choice (for example "cpp single", "cpp grouped commits", "cpp split PRs", "cpp dry-run") or when repository instructions define one. Never drop, stash, or discard changes outside the chosen groups.
+In `c` mode, offer options 1, 2, 4 (with option 2), 5, 6, and e; omit **Split PRs**, since nothing is pushed.
+
+Skip the question when the invocation already states the choice (for example "c single", "cpp grouped commits", "cpp split PRs", "cpp dry-run") or when repository instructions define one. Never drop, stash, or discard changes outside the chosen groups.
 
 ## Commit message rules
 
@@ -91,4 +94,4 @@ Deploy the merged revision. Monitor an automatic deployment triggered by merge i
 
 ## Completion and blockers
 
-Report completed stages, commit/branch, PR and merge state, checks, and deployment result as applicable. Stop at missing authentication/permissions, required reviews, substantive conflicts, or persistent failures; identify the exact incomplete stage rather than repeating unsuccessful mutations. Read-only diagnosis may continue. Never substitute a plan or a queued run for a completed action.
+Report completed stages, commit/branch, PR and merge state, checks, and deployment result as applicable. For `c`, report the commit(s) and branch and state that nothing was pushed. Stop at missing authentication/permissions, required reviews, substantive conflicts, or persistent failures; identify the exact incomplete stage rather than repeating unsuccessful mutations. Read-only diagnosis may continue. Never substitute a plan or a queued run for a completed action.
