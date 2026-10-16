@@ -4,7 +4,8 @@ A portable coding-agent skill that takes your working changes all the way to pro
 
 | Command | Actions |
 | --- | --- |
-| `cpp` | Commit all changes, push, create/update PR |
+| `c` | Commit all changes (grouped by concern), nothing more |
+| `cpp` | `c` plus push, create/update PR |
 | `cppm` | `cpp` plus merge |
 | `cppmd` | `cppm` plus deploy |
 
@@ -60,8 +61,8 @@ Start a new agent session in a Git repository with changes, then:
 
 | Agent | Invoke |
 | --- | --- |
-| Claude Code | `/cppmd`, or ask: "run cpp" / "run cppm" |
-| Codex | `$cppmd`, or ask for `cpp` / `cppm` |
+| Claude Code | `/cppmd`, or ask: "run c" / "run cpp" / "run cppm" |
+| Codex | `$cppmd`, or ask for `c` / `cpp` / `cppm` |
 | Any other agent | "Read `~/.local/share/cppmd/SKILL.md` and run `cpp` in this repository." |
 
 A `cpp` run looks like this:
@@ -85,7 +86,7 @@ When the changes span several concerns, the agent first groups them and asks how
 4) Partial, e.g. "4 A,B"   5) Dry-run   6) Abort   e) Edit
 ```
 
-Skip the question by stating the choice up front, for example "cpp grouped commits", "cpp split PRs", or "cpp dry-run". A single coherent change proceeds without asking.
+Skip the question by stating the choice up front, for example "c single", "cpp grouped commits", "cpp split PRs", or "cpp dry-run". A single coherent change proceeds without asking. `c` offers the same options minus "Split PRs" and stops after committing on the current branch.
 
 The agent stops and asks instead of guessing when the Git account is ambiguous, a deploy target is not defined, required checks or reviews are missing, or a conflict needs a decision. It never force-pushes, bypasses branch protection, or switches your global Git/GitHub account.
 

@@ -2,6 +2,15 @@
 
 These are reports, not arguments to `git push`. Replace placeholders with observed facts and omit unused lines.
 
+## Committed only
+
+For `c`. Nothing is pushed; say so.
+
+```text
+Committed <short SHA or range> on <branch> (not pushed).
+Validation: <checks and results>
+```
+
 ## Successful push and PR
 
 ```text
