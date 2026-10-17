@@ -34,7 +34,17 @@ If author identity is missing, recent human commit history is a hint, not proof 
 4. Continue on the appropriate feature branch. From a default or protected branch, create a descriptive feature branch. Infer the remote/base from upstream and repository context; ask only if ambiguous. In `c` mode, commit on the current branch instead and do not create a branch.
 5. Stage each group's files, inspect the staged diff, and commit using the rules below, in plan order: one commit per group, or a single commit when that option was chosen. Skip empty commits. If only existing unpublished commits remain, continue with them. In `c` mode, stop here and report with [the commit report template](templates/push-message.md#committed-only); if there is nothing to commit, say so and stop.
 6. Push the feature branch(es), setting upstream when missing. Use normal pushes. Do not force-push, rewrite shared history, or push directly to a protected/default branch without separate explicit direction. Resolve routine conflicts while preserving both sides; stop for substantive unresolved decisions.
-7. Create a PR or update the existing PR for each branch, using the repository template first and [the PR template](templates/pull-request.md) otherwise. Describe the final behavior and real validation. With `gh`, use `--body-file` for multiline descriptions. No base-relative changes means no new PR is needed.
+7. Create a PR or update the existing PR for each branch, using the repository template first and [the PR template](templates/pull-request.md) otherwise. Describe the final behavior and real validation. Include screenshots for user-visible UI changes, following [PR screenshots](#pr-screenshots) even when using a repository template. With `gh`, use `--body-file` for multiline descriptions. No base-relative changes means no new PR is needed.
+
+## PR screenshots
+
+For user-visible UI changes, capture the affected screens and embed the images in the PR body. Prefer a side-by-side **Before / After** table for each changed screen or meaningful state.
+
+- Capture **Before** from the intended PR base and **After** from the PR head, using the same viewport, route, interaction state, and comparable test data. Use an isolated checkout or existing base preview when needed to preserve working changes.
+- Use available browser or application capture tools and inspect the resulting images. For new screens without a prior equivalent, include **After** and explain that **Before** is not applicable.
+- Upload or attach captures through a supported host mechanism, or use image URLs accessible to the intended reviewers. Embed them with descriptive labels; local filesystem paths are not usable PR attachments. Verify that the images render in the PR preview or published body when available.
+- Exclude credentials and personal or customer data from captures. If capture, upload, or access to the base screen is unavailable, include the available images and state the specific limitation in the Screenshots section. Never fabricate screenshots or leave placeholder image links in a published PR.
+- When updating a PR after further UI changes, refresh the affected **After** captures to match the latest head. For changes with no visible UI effect, omit the screenshots section unless the repository requires it.
 
 ## Change grouping
 
