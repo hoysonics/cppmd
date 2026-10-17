@@ -1,6 +1,6 @@
 # Pull request template
 
-Use the repository's own PR template when one exists. Otherwise, replace placeholders and omit optional sections that add no value. Describe the final state of the branch, not the history of attempts.
+Use the repository's own PR template when one exists, adding screenshot evidence for user-visible UI changes if it has no suitable section. Otherwise, replace placeholders and omit optional sections that add no value. Describe the final state of the branch, not the history of attempts.
 
 ## Title
 
@@ -30,7 +30,13 @@ Closes #<issue>  <!-- or Refs #<issue>; omit when there is no known issue -->
 
 ## Screenshots
 
-<Before/after for user-visible UI changes; omit otherwise.>
+### <Affected screen or state>
+
+| Before | After |
+| --- | --- |
+| ![Before: <screen or state>](<reviewer-accessible-before-image-url>) | ![After: <screen or state>](<reviewer-accessible-after-image-url>) |
+
+<Briefly describe the visible change. Repeat for other meaningful screens or states.>
 
 ## Risks or migration
 
@@ -50,5 +56,8 @@ Closes #<issue>  <!-- or Refs #<issue>; omit when there is no known issue -->
 - Report only validation that actually ran, with its real result. Never imply that checks passed when they were skipped or are still pending.
 - Link issues only when they are known. Do not invent issue numbers.
 - Do not include secrets, tokens, internal hostnames, or customer data.
+- For user-visible UI changes, attach actual screen captures and prefer the Before / After table above. Capture the PR base and head under comparable conditions (viewport, route, state, and test data), following [PR screenshots](../SKILL.md#pr-screenshots).
+- For a new screen, use an After image and state that Before is not applicable. If capture or attachment is unavailable, explain the specific limitation and include any available images. Omit Screenshots when there is no visible UI effect unless the repository requires it.
+- Replace image placeholders with uploaded attachments or image URLs accessible to reviewers; never publish local paths or placeholder links. Refresh affected After images when the PR's UI changes.
 - When updating an existing PR, rewrite the body to match the current branch, not appending a change log, and keep any human-written sections intact.
 - Add the attribution lines required by the host or user instructions at the end, when present.
